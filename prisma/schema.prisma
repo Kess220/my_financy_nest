@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//* Defina o modelo para a tabela "users"
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  name     String?
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  createdAt DateTime @default(now())
+}
+
+model Wallet {
+  id           Int           @id @default(autoincrement())
+  userId       Int           @unique
+  balance      Float         @default(0)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  value       Float
+  type        String
+  date        DateTime @default(now())
+  walletId    Int
+  description String?
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+}
